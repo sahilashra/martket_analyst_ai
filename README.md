@@ -22,9 +22,10 @@ A multi-functional AI agent that analyzes market research documents using **Retr
 ---
 
 ## Screenshots
-![img.png](img.png)
+<img width="2038" height="1164" alt="image" src="https://github.com/user-attachments/assets/81827e05-b34b-4103-a547-38cbda4cd519" />
 
-![img_1.png](img_1.png)
+<img width="2047" height="1160" alt="image" src="https://github.com/user-attachments/assets/1342d036-a46a-42c8-9a13-dd9c5f7afb62" />
+
 ---
 
 ## 📚 Documentation
