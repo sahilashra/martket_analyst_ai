@@ -2,7 +2,7 @@
 
 > **Built for VAIA Agentic AI Residency Program**
 
-A multi-functional AI agent that analyzes market research documents using **Retrieval-Augmented Generation (RAG)**. Ask questions, generate summaries, and extract structured data—all powered by Google Gemini and ChromaDB.
+A multi-functional AI agent that analyzes market research documents using **Retrieval-Augmented Generation (RAG)**. Ask questions, generate summaries, and extract structured data, all powered by Google Gemini and ChromaDB.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com/)
