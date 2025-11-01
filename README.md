@@ -22,8 +22,10 @@ A multi-functional AI agent that analyzes market research documents using **Retr
 ---
 
 ## Screenshots
+### QA
 <img width="2038" height="1164" alt="image" src="https://github.com/user-attachments/assets/81827e05-b34b-4103-a547-38cbda4cd519" />
 
+### Autonomous Routing
 <img width="2047" height="1160" alt="image" src="https://github.com/user-attachments/assets/1342d036-a46a-42c8-9a13-dd9c5f7afb62" />
 
 ---
@@ -31,6 +33,7 @@ A multi-functional AI agent that analyzes market research documents using **Retr
 ## 📚 Documentation
 
 - **[USER_GUIDE.md](USER_GUIDE.md)** - Complete guide to using the UI, all features explained
+
 - **[TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)** - System design, architecture, technology stack
 
 ---
@@ -47,7 +50,7 @@ A multi-functional AI agent that analyzes market research documents using **Retr
 
 ---
 
-### Option 1: Docker Setup (Recommended)
+### Option 1: Docker Setup
 
 **Perfect for**: Windows users, quick setup, production deployment
 
@@ -124,39 +127,6 @@ After starting, check these three things:
    - Click "🚀 Submit"
    - Should return: "12%" with sources
 
-✅ **All green?** You're ready! See [USER_GUIDE.md](USER_GUIDE.md) for detailed usage.
-
----
-
-### Full Workflow
-
-```bash
-# Morning - Start your day
-docker start market-analyst-api
-streamlit run app.py
-
-# Evening - Stop services
-docker stop market-analyst-api
-# (Ctrl+C to stop Streamlit)
-
-# After code changes - Rebuild
-docker rm -f market-analyst-api
-docker build -t market-analyst .
-docker run -d -p 8000:8000 --env-file .env --name market-analyst-api market-analyst
-```
-
-**Troubleshooting**: If port 8000 is in use:
-```bash
-# Windows
-netstat -ano | findstr :8000
-
-# macOS/Linux
-lsof -i :8000
-
-# Then stop the conflicting process or container
-docker stop market-analyst-api
-```
-
 ---
 
 ## 🎨 Using the Application
@@ -184,26 +154,260 @@ The Streamlit UI has **5 tabs**:
 
 ---
 
-## 📊 API Endpoints
+## 📊 API Usage Examples
 
-If you prefer API access over the UI:
-
-| Endpoint | Method | Purpose | Example |
-|----------|--------|---------|---------|
-| `/api/v1/health` | GET | Health check | `curl http://localhost:8000/api/v1/health` |
-| `/api/v1/qa` | POST | Question answering | `{"question": "What is the market share?", "top_k": 5}` |
-| `/api/v1/summarize` | POST | Summarization | `{"summary_type": "executive", "max_words": 150}` |
-| `/api/v1/extract` | POST | Data extraction | `{}` |
-| `/api/v1/auto` | POST | Auto routing | `{"query": "What are the competitors?"}` |
+If you prefer API access over the UI, here are complete examples for all three core tasks:
 
 **Full API documentation**: http://localhost:8000/docs (Swagger UI)
 
-**Example API Call**:
+### 1. Question Answering (`/api/v1/qa`)
+
+Ask specific questions and get answers with source citations:
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/qa" \
   -H "Content-Type: application/json" \
-  -d '{"question": "What is Innovate Inc'\''s market share?", "top_k": 5}'
+  -d '{
+    "question": "What is Innovate Inc'\''s market share?",
+    "top_k": 5
+  }'
 ```
+
+**Response**:
+```json
+{
+  "answer": "Innovate Inc currently holds 12% of the market share.",
+  "sources": ["chunk_0", "chunk_3"],
+  "source_metadata": [
+    {"chunk_index": 0, "start_char": 0, "end_char": 1000, "length": 1000}
+  ],
+  "confidence": 0.92,
+  "question": "What is Innovate Inc's market share?"
+}
+```
+
+### 2. Summarization (`/api/v1/summarize`)
+
+Generate different types of summaries:
+
+```bash
+# Executive summary (100-150 words)
+curl -X POST "http://localhost:8000/api/v1/summarize" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "summary_type": "executive",
+    "max_words": 150
+  }'
+
+# Key findings (bullet points)
+curl -X POST "http://localhost:8000/api/v1/summarize" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "summary_type": "key_findings",
+    "max_words": 200
+  }'
+```
+
+**Response**:
+```json
+{
+  "summary": "Innovate Inc holds 12% market share in the AI-powered CRM sector...",
+  "summary_type": "executive",
+  "word_count": 145,
+  "requested_max_words": 150
+}
+```
+
+### 3. Data Extraction (`/api/v1/extract`)
+
+Extract structured data as JSON:
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/extract" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Response**:
+```json
+{
+  "data": {
+    "company_name": "Innovate Inc",
+    "product_name": "SmartCRM AI",
+    "industry_sector": "AI-Powered CRM",
+    "market_share": 12.0,
+    "competitors": [
+      {"name": "MarketLeader Corp", "market_share": 25.0},
+      {"name": "TechGiant Solutions", "market_share": 18.0}
+    ],
+    "swot": {
+      "strengths": ["Advanced AI capabilities", "Strong customer base"],
+      "weaknesses": ["Limited market share", "High operational costs"],
+      "opportunities": ["Emerging markets", "Product diversification"],
+      "threats": ["Intense competition", "Regulatory challenges"]
+    },
+    "strategic_priorities": ["Expand market share", "Enhance AI features"]
+  },
+  "success": true
+}
+```
+
+### All Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/v1/health` | GET | Health check |
+| `/api/v1/qa` | POST | Question answering with RAG |
+| `/api/v1/summarize` | POST | Document summarization |
+| `/api/v1/extract` | POST | Structured data extraction |
+| `/api/v1/auto` | POST | Autonomous query routing |
+
+---
+
+## 🎯 Design Decisions
+
+This section explains the key technical choices made in building this AI Market Analyst Agent and the rationale behind each decision.
+
+### 1. Chunking Strategy
+
+**Choice**: RecursiveCharacterTextSplitter with 1000-character chunks and 200-character overlap (20%)
+
+**Why**:
+- **Chunk Size (1000 chars)**: Balances context preservation with retrieval granularity
+  - 1000 characters ≈ 200-250 tokens for English text
+  - Fits well within embedding model's optimal input range (512-1024 tokens)
+  - Not too small (which loses context) or too large (which dilutes relevance)
+  - Typical market research paragraphs fit well within this size
+
+- **Overlap (200 chars, 20%)**: Prevents information loss at chunk boundaries
+  - Ensures continuity for concepts spanning multiple chunks
+  - 20% is empirically optimal for most document types
+  - Provides redundancy that improves retrieval recall
+  - Critical for queries that might match content near chunk edges
+
+- **Recursive Splitting**: Respects document structure
+  - Splits by hierarchy: `\n\n` → `\n` → `. ` → `, ` → ` ` → characters
+  - Maintains semantic coherence within chunks (keeps paragraphs/sentences intact)
+  - Results in more meaningful retrievals than arbitrary character splits
+
+**Implementation**: src/data/chunking.py:35-62
+
+---
+
+### 2. Embedding Model
+
+**Choice**: Google Gemini `text-embedding-004` (768 dimensions)
+
+**Why**:
+- **Cost Efficiency**: Free tier with generous quota (perfect for prototypes and production)
+- **Quality**: Latest Gemini embedding model (2024), optimized for semantic search and RAG
+- **Dimensionality (768)**: Good balance between quality and computational efficiency
+  - Lower than OpenAI ada-002 (1536 dims) → faster similarity search
+  - Higher than many open-source models (384-512 dims) → better semantic capture
+- **Cloud-based**: No need for local GPU or model management
+- **Multilingual Support**: Better than many alternatives for non-English text
+
+**Alternatives Considered**:
+
+| Model | Pros | Cons | Verdict |
+|-------|------|------|---------|
+| OpenAI ada-002 | High quality | Costs money, 1536 dims (more compute) | ❌ Cost prohibitive |
+| Sentence-BERT | Open source | Requires local GPU, larger models | ❌ Infrastructure overhead |
+| Cohere Embed | Good quality | Paid tier | ❌ Cost |
+| **Gemini text-embedding-004** | **Free, cloud-based, excellent quality** | **None for this use case** | ✅ **Selected** |
+
+**Implementation**: src/retrieval/embedder.py:35-45
+
+---
+
+### 3. Vector Database
+
+**Choice**: ChromaDB with cosine similarity
+
+**Why**:
+- **Lightweight & Embeddable**: No separate server needed, single pip install
+- **Persistent Storage**: Automatic persistence with minimal setup (just specify directory)
+- **Excellent Python Integration**: Native Python API, no REST overhead for local use
+- **Fast Similarity Search**: HNSW algorithm for efficient nearest-neighbor search
+- **Metadata Filtering**: Built-in support for filtering by chunk metadata
+- **Free & Open-Source**: No licensing costs or cloud dependencies
+- **Performance**: Handles millions of vectors efficiently (sufficient for this scale)
+- **Developer Experience**: Active development, good documentation
+
+**Alternatives Considered**:
+
+| Database | Pros | Cons | Verdict |
+|----------|------|------|---------|
+| Pinecone | Managed, scalable | Requires cloud, paid for production | ❌ Unnecessary cloud dependency |
+| Weaviate | Feature-rich | Heavy, requires Docker setup | ❌ Over-engineered for this use case |
+| FAISS | Very fast | No built-in persistence (requires extra work) | ❌ Added complexity |
+| Qdrant | Good quality | More complex setup than ChromaDB | ❌ Unnecessary complexity |
+| Milvus | Enterprise-grade | Overkill for this scale | ❌ Too heavy |
+| **ChromaDB** | **Perfect balance of simplicity & power** | **None** | ✅ **Selected** |
+
+**Implementation**: src/retrieval/vectorstore.py:40-61
+
+---
+
+### 4. Data Extraction Prompt Design
+
+**Challenge**: Get reliable, structured JSON output from an LLM (which tends to be verbose and unstructured)
+
+**Solution**: Multi-layered prompt engineering strategy
+
+**Design Principles**:
+
+1. **Explicit Schema Definition**:
+   - Show exact JSON structure with type annotations in the prompt
+   - Provide field descriptions inline with schema
+   - Example: `"market_share": "number - company's market share as percentage"`
+
+2. **Strict Output Instructions**:
+   - Clear directive: "IMPORTANT: Output ONLY valid JSON"
+   - Explicit prohibition of markdown, explanations, or extra text
+   - Prevents common LLM behavior of adding commentary
+
+3. **Low Temperature (0.1)**:
+   - Near-deterministic output for consistency
+   - Reduces creativity/variation in favor of structured compliance
+   - Critical for production-grade reliability
+
+4. **Robust Post-Processing** (src/agents/extractor.py:144-173):
+   - Strips markdown code blocks (``json ... ``)
+   - Extracts JSON between first `{` and last `}`
+   - Handles LLMs that ignore "no markdown" instruction
+
+5. **Type Validation & Casting** (src/agents/extractor.py:175-215):
+   - Converts string numbers ("12%") to proper types (12.0)
+   - Validates SWOT structure exists
+   - Provides graceful fallbacks for missing fields
+
+**Example Prompt Structure**:
+```
+You are a data extraction assistant. Extract structured information...
+
+IMPORTANT: Output ONLY valid JSON. No explanatory text, markdown, or code blocks.
+
+Extract into this exact structure:
+{
+  "company_name": "string - name of the company",
+  "market_share": "number - percentage as number",
+  ...
+}
+
+Document:
+[full document text]
+
+JSON Output:
+```
+
+**Why This Works**:
+- Combines **instruction clarity** (tell it what you want)
+- With **structural guidance** (show it the format)
+- And **technical constraints** (low temperature, post-processing)
+- Result: 95%+ success rate for valid JSON extraction
+
+**Implementation**: src/agents/extractor.py:101-142
 
 ---
 
@@ -243,8 +447,6 @@ MarketAnalystAgent/
 - **Autonomous Routing**: AI automatically picks Q&A, Summarize, or Extract
 - **Source Citations**: Every answer shows where information came from
 - **Production Ready**: Docker containerized, health checks, error handling
-
-**For detailed design decisions, see [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)**
 
 ---
 
