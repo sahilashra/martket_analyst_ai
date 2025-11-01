@@ -340,9 +340,6 @@ This section explains the key technical choices made in building this AI Market 
 |----------|------|------|---------|
 | Pinecone | Managed, scalable | Requires cloud, paid for production | ❌ Unnecessary cloud dependency |
 | Weaviate | Feature-rich | Heavy, requires Docker setup | ❌ Over-engineered for this use case |
-| FAISS | Very fast | No built-in persistence (requires extra work) | ❌ Added complexity |
-| Qdrant | Good quality | More complex setup than ChromaDB | ❌ Unnecessary complexity |
-| Milvus | Enterprise-grade | Overkill for this scale | ❌ Too heavy |
 | **ChromaDB** | **Perfect balance of simplicity & power** | **None** | ✅ **Selected** |
 
 **Implementation**: src/retrieval/vectorstore.py:40-61
@@ -400,12 +397,6 @@ Document:
 
 JSON Output:
 ```
-
-**Why This Works**:
-- Combines **instruction clarity** (tell it what you want)
-- With **structural guidance** (show it the format)
-- And **technical constraints** (low temperature, post-processing)
-- Result: 95%+ success rate for valid JSON extraction
 
 **Implementation**: src/agents/extractor.py:101-142
 
