@@ -9,6 +9,7 @@ A multi-functional AI agent that analyzes market research documents using **Retr
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
+## Demo Video: [Video Link](https://drive.google.com/file/d/14ieN7yBn2vhCR5QbIzPO1zDYxWfOT1Ah/view?usp=sharing)
 
 ## 🎯 Features
 
